@@ -18,11 +18,8 @@ public class ContactData {
   private final String homepage;
   private final String birthyear;
   private final String anniversaryyear;
-  private final String secondaryaddress;
-  private final String secondaryhomephonenumber;
-  private final String notes;
 
-  public ContactData(String firstname, String middlename, String lastname, String nikname, String title, String company, String address, String homephonenumber, String mobilephonenumber, String workphonenumber, String fax, String email1, String email2, String email3, String homepage, String birthyear, String anniversaryyear, String secondaryaddress, String secondaryhomephonenumber, String notes) {
+  public ContactData(String firstname, String middlename, String lastname, String nikname, String title, String company, String address, String homephonenumber, String mobilephonenumber, String workphonenumber, String fax, String email1, String email2, String email3, String homepage, String birthyear, String anniversaryyear) {
     this.firstname = firstname;
     this.middlename = middlename;
     this.lastname = lastname;
@@ -40,9 +37,7 @@ public class ContactData {
     this.homepage = homepage;
     this.birthyear = birthyear;
     this.anniversaryyear = anniversaryyear;
-    this.secondaryaddress = secondaryaddress;
-    this.secondaryhomephonenumber = secondaryhomephonenumber;
-    this.notes = notes;
+
   }
 
   public String getFirstname() {
@@ -113,15 +108,4 @@ public class ContactData {
     return anniversaryyear;
   }
 
-  public String getSecondaryaddress() {
-    return secondaryaddress;
-  }
-
-  public String getSecondaryhomephonenumber() {
-    return secondaryhomephonenumber;
-  }
-
-  public String getNotes() {
-    return notes;
-  }
 }

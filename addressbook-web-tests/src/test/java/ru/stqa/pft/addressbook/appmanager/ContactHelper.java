@@ -52,16 +52,28 @@ public class ContactHelper extends HelperBase {
     }
     type(By.name("ayear"),contactData.getAnniversaryyear());
 
-    if (!select(By.xpath("//div[@id='content']/form/select[5]//option[2]"))) {
-      click(By.xpath("//div[@id='content']/form/select[5]//option[2]"));
-    }
-    type(By.name("address2"),contactData.getSecondaryaddress());
-    type(By.name("phone2"),contactData.getSecondaryhomephonenumber());
-    type(By.name("notes"),contactData.getNotes());
+
 
   }
 
   public void initContactCreation() {
     click(By.linkText("add new"));
+  }
+
+  public void selectContact() {
+    click(By.name("selected[]"));
+  }
+
+  public void deleteSelectedContact() {
+    click(By.xpath("//div[@id='content']/form[2]/div[2]/input"));
+    accept();
+  }
+
+  public void openContactForEdit() {
+    click(By.xpath("//table[@id='maintable']/tbody/tr[2]/td[8]/a/img"));
+  }
+
+  public void updateContactData() {
+    click(By.name("update"));
   }
 }

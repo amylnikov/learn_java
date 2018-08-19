@@ -18,15 +18,21 @@ public class HelperBase {
 
   protected void type(By locator, String text) {
     click(locator);
-    wd.findElement(locator).clear();
-    wd.findElement(locator).sendKeys(text);
+    if (text != null) {
+      String existingText = wd.findElement(locator).getAttribute("value");
+      if (!text.equals(existingText)) {
+        wd.findElement(locator).clear();
+        wd.findElement(locator).sendKeys(text);
+      }
+
+    }
   }
 
   protected boolean select(By locator) {
     return wd.findElement(locator).isSelected();
   }
 
-  protected void accept(){
+  protected void accept() {
     wd.switchTo().alert().accept();
   }
 

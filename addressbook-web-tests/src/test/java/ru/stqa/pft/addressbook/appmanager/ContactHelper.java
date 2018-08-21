@@ -7,6 +7,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import ru.stqa.pft.addressbook.model.ContactData;
+import ru.stqa.pft.addressbook.model.GroupData;
 
 public class ContactHelper extends HelperBase {
 
@@ -21,6 +22,10 @@ public class ContactHelper extends HelperBase {
 
   public void inputContactData() {
     click(By.xpath("//div[@id='content']/form/input[21]"));
+  }
+
+  public void returnToContactPage() {
+    click(By.linkText("home page"));
   }
 
   public void fillContactForm(ContactData contactData, boolean creation) {
@@ -57,7 +62,7 @@ public class ContactHelper extends HelperBase {
     type(By.name("ayear"),contactData.getAnniversaryyear());
 
     if(creation){
-      new Select(wd.findElement(By.name("new_group"))).selectByVisibleText(contactData.getGroup());
+        new Select(wd.findElement(By.name("new_group"))).selectByVisibleText(contactData.getGroup());
     } else{
       Assert.assertFalse(isElementPresent(By.name("new_group")));
     }
@@ -83,5 +88,16 @@ public class ContactHelper extends HelperBase {
 
   public void updateContactData() {
     click(By.name("update"));
+  }
+
+  public void createContact(ContactData contact, boolean creation) { 
+    initContactCreation();
+    fillContactForm(contact,creation);
+    inputContactData();
+    returnToContactPage();
+  }
+
+  public boolean isThereAContact() {
+    return isElementPresent(By.name("selected[]"));
   }
 }

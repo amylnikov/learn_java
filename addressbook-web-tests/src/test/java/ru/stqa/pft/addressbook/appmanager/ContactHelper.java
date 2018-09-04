@@ -1,17 +1,17 @@
 package ru.stqa.pft.addressbook.appmanager;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import ru.stqa.pft.addressbook.model.ContactData;
-import ru.stqa.pft.addressbook.model.GroupData;
+import ru.stqa.pft.addressbook.model.Contacts;
+import ru.stqa.pft.addressbook.model.Groups;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ContactHelper extends HelperBase {
 
@@ -20,9 +20,9 @@ public class ContactHelper extends HelperBase {
     super(wd);
   }
 
-  public void checkInputContactData() {
-    click(By.xpath("//table[@id='maintable']/tbody/tr[2]/td[7]/a/img"));
-  }
+ // public void checkInputContactData() {
+ //   click(By.xpath("//table[@id='maintable']/tbody/tr[2]/td[7]/a/img"));
+ // }
 
   public void inputContactData() {
     click(By.xpath("//div[@id='content']/form/input[21]"));
@@ -77,8 +77,9 @@ public class ContactHelper extends HelperBase {
     click(By.linkText("add new"));
   }
 
-  public void selectContact(int index) {
-    wd.findElements(By.name("selected[]")).get(index).click();
+
+  public void selectContactById(int id) {
+    wd.findElement(By.cssSelector("input[value='" + id + "']")).click();
   }
 
   public void deleteSelectedContact() {
@@ -86,34 +87,46 @@ public class ContactHelper extends HelperBase {
     accept();
   }
 
-  public void openContactForEdit(int index) {
-    wd.findElements(By.xpath("//table[@id='maintable']/tbody/tr[*]/td[8]/a/img")).get(index).click();
+
+  public void openContactForEditById(int id) {
+    wd.findElement(By.xpath("//table[@id='maintable']/tbody/tr[*]/td[8]/a[@href='edit.php?id=" + id + "']/img")).click();
   }
 
   public void updateContactData() {
     click(By.name("update"));
   }
 
-  public void createContact(ContactData contact, boolean creation) { 
+  public void create(ContactData contact, boolean creation) {
     initContactCreation();
     fillContactForm(contact,creation);
     inputContactData();
     returnToContactPage();
   }
 
+  public void modify(ContactData contact) {
+    openContactForEditById(contact.getId());
+    fillContactForm(contact, false);
+    updateContactData();
+    returnToContactPage();
+  }
+
+  public void delete(ContactData contact) {
+    selectContactById(contact.getId());
+    deleteSelectedContact();
+  }
+
   public boolean isThereAContact() {
     return isElementPresent(By.name("selected[]"));
   }
 
-  public List<ContactData> getContactList() {
-    List<ContactData> contacts = new ArrayList<ContactData>();
+  public Contacts all() {
+    Contacts contacts = new Contacts();
     List<WebElement> elements = wd.findElements(By.xpath("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]"));
     for (WebElement element : elements) {
       String firstname = element.findElement(By.xpath("td[3]")).getText();
       String lastname = element.findElement(By.xpath("td[2]")).getText();
       int id = Integer.parseInt(element.findElement(By.name("selected[]")).getAttribute("id"));
-      ContactData contact = new ContactData(id, firstname, null, lastname, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-      contacts.add(contact);
+      contacts.add(new ContactData().withId(id).withFirstname(firstname).withLastname(lastname));
     }
     return contacts;
   }

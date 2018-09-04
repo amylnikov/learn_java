@@ -1,27 +1,36 @@
 package ru.stqa.pft.addressbook.tests;
 
-import org.testng.Assert;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.ContactData;
+import ru.stqa.pft.addressbook.model.Contacts;
 
-import java.util.List;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.testng.Assert.assertEquals;
 
 public class ContactDeletionTests extends TestBase {
 
-  @Test(enabled = false)
-  public void testContactDeletion() {
-    app.goTo().gotoHomePage();
-    if (!app.getContactHelper().isThereAContact()) {
-      app.getContactHelper().createContact(new ContactData("Иван", "Иванович", "Иванов", "vano", "Друг", "ООО \"Огонёк\"", "Тверь, ул. Ленина, д. 2, кв. 33", "488-44-22", "9091321312", "489-76-88", "455-55-55", "ivan@test.tst", "ivan2@test.tst", null, "\\www.test.tst/vano", "1983", null, "test1"), true);
+  @BeforeMethod
+  public void ensurePreconditions(){
+    app.goTo().homePage();
+    if (app.contact().all().size() == 0) {
+      app.contact().create(new ContactData().withFirstname("Егор").withLastname("Серов").withMiddlename("Ивановыч").withNikname("Vanka").withGroup("test4"), true);
     }
-    List<ContactData> before = app.getContactHelper().getContactList();
-    app.getContactHelper().selectContact(before.size() - 1);
-    app.getContactHelper().deleteSelectedContact();
-    app.goTo().gotoHomePage();
-    List<ContactData> after = app.getContactHelper().getContactList();
-    Assert.assertEquals(after.size(), before.size() - 1);
-    before.remove(before.size() - 1);
-    Assert.assertEquals(before, after);
   }
+
+  @Test(enabled = true)
+  public void testContactDeletion() {
+    Contacts before = app.contact().all();
+    ContactData deletedContact = before.iterator().next();
+    app.contact().delete(deletedContact);
+    app.goTo().homePage();
+    Contacts after = app.contact().all();
+    assertEquals(after.size(), before.size() - 1);
+
+    assertThat(after, equalTo(before.without(deletedContact)));
+  }
+
 
 }

@@ -71,7 +71,7 @@ public class ContactData {
     return fax;
   }
 
-  public String getEmail() {
+  public String getEmail1() {
     return email1;
   }
 
@@ -188,6 +188,7 @@ public class ContactData {
     this.anniversaryyear = anniversaryyear;
     return this;
   }
+
 
   public ContactData withGroup(String group) {
     this.group = group;

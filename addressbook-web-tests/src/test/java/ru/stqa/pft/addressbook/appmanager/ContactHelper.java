@@ -136,16 +136,16 @@ public class ContactHelper extends HelperBase {
       int id = Integer.parseInt(element.findElement(By.name("selected[]")).getAttribute("id"));
       String lastname = element.findElement(By.xpath("td[2]")).getText();
       String firstname = element.findElement(By.xpath("td[3]")).getText();
-      String[] phones = element.findElement(By.xpath("td[6]")).getText().split("\n");
+      String allPhones = element.findElement(By.xpath("td[6]")).getText();
 
       String address = element.findElement(By.xpath("td[4]")).getText();
 
-      String[] emails = element.findElement(By.xpath("td[5]")).getText().split("\n");
-      if(phones != null && emails != null) {
+      String allEmails = element.findElement(By.xpath("td[5]")).getText();
+      if(allPhones != null && allEmails != null) {
         contactCache.add(new ContactData().withId(id).withFirstname(firstname).withLastname(lastname)
-                .withHomephonenumber(phones[0]).withMobilephonenumber(phones[1]).withWorkphonenumber(phones[2])
+                .withAllPhones(allPhones)
                 .withAddress(address)
-                .withEmail1(emails[0]).withEmail2(emails[1]).withEmail3(emails[2]));
+                .withAllEmails(allEmails));
       }
       contactCache.add(new ContactData().withId(id).withFirstname(firstname).withLastname(lastname));
     }

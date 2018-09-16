@@ -1,0 +1,44 @@
+<contacts>
+  <contact>
+    <firstname>Имя0</firstname>
+    <middlename>Отчество0</middlename>
+    <lastname>Фамилия0</lastname>
+    <nikname>Ник0</nikname>
+    <address>г. Тверь, ул. Ленина, д.11/22, кв.0</address>
+    <homephonenumber>0982211</homephonenumber>
+    <mobilephonenumber>09093331111</mobilephonenumber>
+    <workphonenumber>09001112222</workphonenumber>
+    <email1>e.serov0@bk.ru</email1>
+    <email2>serov0@mail.ru</email2>
+    <email3>gok0@dom.com</email3>
+    <group>test0</group>
+  </contact>
+  <contact>
+    <firstname>Имя1</firstname>
+    <middlename>Отчество1</middlename>
+    <lastname>Фамилия1</lastname>
+    <nikname>Ник1</nikname>
+    <address>г. Тверь, ул. Ленина, д.11/22, кв.1</address>
+    <homephonenumber>1982211</homephonenumber>
+    <mobilephonenumber>19093331111</mobilephonenumber>
+    <workphonenumber>19001112222</workphonenumber>
+    <email1>e.serov1@bk.ru</email1>
+    <email2>serov1@mail.ru</email2>
+    <email3>gok1@dom.com</email3>
+    <group>test1</group>
+  </contact>
+  <contact>
+    <firstname>Имя2</firstname>
+    <middlename>Отчество2</middlename>
+    <lastname>Фамилия2</lastname>
+    <nikname>Ник2</nikname>
+    <address>г. Тверь, ул. Ленина, д.11/22, кв.2</address>
+    <homephonenumber>2982211</homephonenumber>
+    <mobilephonenumber>29093331111</mobilephonenumber>
+    <workphonenumber>29001112222</workphonenumber>
+    <email1>e.serov2@bk.ru</email1>
+    <email2>serov2@mail.ru</email2>
+    <email3>gok2@dom.com</email3>
+    <group>test2</group>
+  </contact>
+</contacts>

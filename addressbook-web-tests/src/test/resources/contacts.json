@@ -1,0 +1,44 @@
+[
+  {
+    "firstname": "Имя0",
+    "middlename": "Отчество0",
+    "lastname": "Фамилия0",
+    "nikname": "Ник0",
+    "address": "г. Тверь, ул. Ленина, д.11/22, кв.0",
+    "homephonenumber": "0982211",
+    "mobilephonenumber": "09093331111",
+    "workphonenumber": "09001112222",
+    "email1": "e.serov0@bk.ru",
+    "email2": "serov0@mail.ru",
+    "email3": "gok0@dom.com",
+    "group": "test0"
+  },
+  {
+    "firstname": "Имя1",
+    "middlename": "Отчество1",
+    "lastname": "Фамилия1",
+    "nikname": "Ник1",
+    "address": "г. Тверь, ул. Ленина, д.11/22, кв.1",
+    "homephonenumber": "1982211",
+    "mobilephonenumber": "19093331111",
+    "workphonenumber": "19001112222",
+    "email1": "e.serov1@bk.ru",
+    "email2": "serov1@mail.ru",
+    "email3": "gok1@dom.com",
+    "group": "test1"
+  },
+  {
+    "firstname": "Имя2",
+    "middlename": "Отчество2",
+    "lastname": "Фамилия2",
+    "nikname": "Ник2",
+    "address": "г. Тверь, ул. Ленина, д.11/22, кв.2",
+    "homephonenumber": "2982211",
+    "mobilephonenumber": "29093331111",
+    "workphonenumber": "29001112222",
+    "email1": "e.serov2@bk.ru",
+    "email2": "serov2@mail.ru",
+    "email3": "gok2@dom.com",
+    "group": "test2"
+  }
+]

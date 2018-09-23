@@ -7,6 +7,8 @@ import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import ru.stqa.pft.addressbook.model.ContactData;
 import ru.stqa.pft.addressbook.model.Contacts;
+import ru.stqa.pft.addressbook.model.GroupData;
+import ru.stqa.pft.addressbook.model.Groups;
 
 import java.util.List;
 
@@ -94,6 +96,10 @@ public class ContactHelper extends HelperBase {
     wd.findElement(By.xpath("//table[@id='maintable']/tbody/tr[*]/td[8]/a[@href='edit.php?id=" + id + "']/img")).click();
   }
 
+  public void openDetailsById(int id){
+    wd.findElement(By.xpath("//table[@id='maintable']/tbody/tr[*]/td[7]/a[@href='view.php?id=" + id + "']/img")).click();
+  }
+
   public void updateContactData() {
     click(By.name("update"));
   }
@@ -178,4 +184,33 @@ public class ContactHelper extends HelperBase {
             .withAddress(address)
             .withEmail1(email1).withEmail2(email2).withEmail3(email3);
   }
+
+
+  public Groups memberOfGroups (ContactData contact){
+    openDetailsById(contact.getId());
+    List<WebElement> elements = wd.findElements(By.xpath("//*[@id=\"content\"]/i/a"));
+    Groups groups = new Groups();
+    for (WebElement element : elements) {
+      Integer id = element.getAttribute("href").replaceAll("[^0-9]","").;
+      String name = element.getText();
+      groups.add(new GroupData().withId(id).withName(name));
+    }
+    return new Groups(groups);
+  }
+
+  public void addToNewGroup (Groups fndgroups){
+
+    List<WebElement> elements = wd.findElements(By.xpath("//div[@class='right']//select/option"));
+    for (WebElement element : elements) {
+      String name = element.getText();
+
+
+      if (name == fndgroups.iterator().next().getName()){
+        System.out.println("попал");
+      }else{
+        System.out.println("мимо");
+      }
+    }
+  }
+
 }

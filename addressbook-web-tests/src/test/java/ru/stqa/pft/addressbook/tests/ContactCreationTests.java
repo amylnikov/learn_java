@@ -64,7 +64,7 @@ public class ContactCreationTests extends TestBase {
         String[] split = line.split(";");
         list.add(new Object[] {new ContactData().withFirstname(split[0]).withLastname(split[1]).withMiddlename(split[2]).withNikname(split[3]).withGroup(split[4])
                 .withMobilephonenumber(split[5]).withWorkphonenumber(split[6]).withHomephonenumber(split[7])
-                .withAddress(split[8]).withEmail1(split[9]).withEmail2(split[10]).withEmail3(split[11])});
+                .withAddress(split[8]).withEmail1(split[9]).withEmail2(split[10]).withEmail3(split[11]).withPhoto(new File(split[12]))});
         line = reader.readLine();
       }
       return list.iterator();
@@ -72,13 +72,13 @@ public class ContactCreationTests extends TestBase {
   }
 
 
-  @Test(dataProvider = "validGroupsFromJSON")
+  @Test(dataProvider = "validContactsFromXML")
   public void testContactCreation(ContactData contact) {
     app.goTo().homePage();
-    Contacts before = app.contact().all();
+    Contacts before = app.db().contacts();
     app.contact().create(contact, true);
     assertThat(app.contact().count(), equalTo(before.size() + 1));
-    Contacts after = app.contact().all();
+    Contacts after = app.db().contacts();
 
     assertThat(after, equalTo(
             before.withAdded(contact.withId(after.stream().mapToInt((c) -> c.getId()).max().getAsInt()))));

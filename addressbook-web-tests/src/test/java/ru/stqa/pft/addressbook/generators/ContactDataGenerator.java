@@ -72,11 +72,11 @@ public class ContactDataGenerator {
     System.out.println(new File(".").getAbsolutePath());
     try(Writer writer = new FileWriter(file)){
       for(ContactData contact : contacts){
-        writer.write(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s\n",contact.getFirstname(),contact.getLastname(),contact.getMiddlename(),
+        writer.write(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s\n",contact.getFirstname(),contact.getLastname(),contact.getMiddlename(),
                 contact.getNikname(),contact.getGroup(),
                 contact.getMobilephonenumber(),contact.getWorkphonenumber(),contact.getHomephonenumber(),
                 contact.getAddress(),
-                contact.getEmail1(),contact.getEmail2(),contact.getEmail3()));
+                contact.getEmail1(),contact.getEmail2(),contact.getEmail3(),contact.getPhoto()));
       }
     }
   }
@@ -89,7 +89,7 @@ public class ContactDataGenerator {
       contacts.add(new ContactData().withFirstname(String.format("Имя%s", i)).withLastname(String.format("Фамилия%s", i)).withMiddlename(String.format("Отчество%s", i)).withNikname(String.format("Ник%s", i)).withGroup(String.format("test%s", i))
               .withMobilephonenumber(String.format("%s9093331111", i)).withWorkphonenumber(String.format("%s9001112222", i)).withHomephonenumber(String.format("%s982211", i))
               .withAddress("г. Тверь, ул. Ленина, д.11/22, кв." + i)
-              .withEmail1(String.format("e.serov%s@bk.ru", i)).withEmail2(String.format("serov%s@mail.ru", i)).withEmail3(String.format("gok%s@dom.com", i)));
+              .withEmail1(String.format("e.serov%s@bk.ru", i)).withEmail2(String.format("serov%s@mail.ru", i)).withEmail3(String.format("gok%s@dom.com", i)).withPhoto(new File("src/test/resources/foto.jpg")));
     }
     return contacts;
   }

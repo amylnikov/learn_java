@@ -11,7 +11,8 @@
     "email1": "e.serov0@bk.ru",
     "email2": "serov0@mail.ru",
     "email3": "gok0@dom.com",
-    "group": "test0"
+    "group": "test0",
+    "photo": "src\\test\\resources\\foto.jpg"
   },
   {
     "firstname": "Имя1",
@@ -25,7 +26,8 @@
     "email1": "e.serov1@bk.ru",
     "email2": "serov1@mail.ru",
     "email3": "gok1@dom.com",
-    "group": "test1"
+    "group": "test1",
+    "photo": "src\\test\\resources\\foto.jpg"
   },
   {
     "firstname": "Имя2",
@@ -39,6 +41,7 @@
     "email1": "e.serov2@bk.ru",
     "email2": "serov2@mail.ru",
     "email3": "gok2@dom.com",
-    "group": "test2"
+    "group": "test2",
+    "photo": "src\\test\\resources\\foto.jpg"
   }
 ]

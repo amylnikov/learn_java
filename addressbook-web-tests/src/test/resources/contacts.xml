@@ -12,6 +12,7 @@
     <email2>serov0@mail.ru</email2>
     <email3>gok0@dom.com</email3>
     <group>test0</group>
+    <photo>src\test\resources\foto.jpg</photo>
   </contact>
   <contact>
     <firstname>Имя1</firstname>
@@ -26,6 +27,7 @@
     <email2>serov1@mail.ru</email2>
     <email3>gok1@dom.com</email3>
     <group>test1</group>
+    <photo>src\test\resources\foto.jpg</photo>
   </contact>
   <contact>
     <firstname>Имя2</firstname>
@@ -40,5 +42,6 @@
     <email2>serov2@mail.ru</email2>
     <email3>gok2@dom.com</email3>
     <group>test2</group>
+    <photo>src\test\resources\foto.jpg</photo>
   </contact>
 </contacts>

@@ -148,8 +148,7 @@ public class ContactHelper extends HelperBase {
                 .withAllPhones(allPhones)
                 .withAddress(address)
                 .withAllEmails(allEmails));
-      }
-      contactCache.add(new ContactData().withId(id).withFirstname(firstname).withLastname(lastname));
+      }else {contactCache.add(new ContactData().withId(id).withFirstname(firstname).withLastname(lastname));}
     }
     return new Contacts(contactCache);
   }

@@ -7,6 +7,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.ContactData;
 import ru.stqa.pft.addressbook.model.Contacts;
+import ru.stqa.pft.addressbook.model.GroupData;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -55,14 +56,15 @@ public class ContactCreationTests extends TestBase {
     }
   }
 
-  @DataProvider
+  @DataProvider()
   public Iterator<Object[]> validContactsFromCSV() throws IOException {
     List<Object[]> list = new ArrayList<Object[]>();
     try(BufferedReader reader = new BufferedReader(new FileReader(new File("src/test/resources/contacts.csv")))){
       String line = reader.readLine();
       while (line != null){
         String[] split = line.split(";");
-        list.add(new Object[] {new ContactData().withFirstname(split[0]).withLastname(split[1]).withMiddlename(split[2]).withNikname(split[3]).withGroup(split[4])
+        list.add(new Object[] {new ContactData().withFirstname(split[0]).withLastname(split[1]).withMiddlename(split[2]).withNikname(split[3])
+                .inGroup(new GroupData().withName(split[4]))
                 .withMobilephonenumber(split[5]).withWorkphonenumber(split[6]).withHomephonenumber(split[7])
                 .withAddress(split[8]).withEmail1(split[9]).withEmail2(split[10]).withEmail3(split[11]).withPhoto(new File(split[12]))});
         line = reader.readLine();
@@ -72,7 +74,7 @@ public class ContactCreationTests extends TestBase {
   }
 
 
-  @Test(dataProvider = "validContactsFromXML")
+  @Test(dataProvider = "validGroupsFromJSON")
   public void testContactCreation(ContactData contact) {
     app.goTo().homePage();
     Contacts before = app.db().contacts();

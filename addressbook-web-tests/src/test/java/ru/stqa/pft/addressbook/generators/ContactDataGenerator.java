@@ -6,16 +6,29 @@ import com.beust.jcommander.ParameterException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thoughtworks.xstream.XStream;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import ru.stqa.pft.addressbook.model.ContactData;
+import ru.stqa.pft.addressbook.model.GroupData;
+import ru.stqa.pft.addressbook.model.Groups;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContactDataGenerator {
+
+  private SessionFactory sessionFactory;
+
   @Parameter(names = "-c", description = "Contact count")
   public int count;
 
@@ -24,6 +37,7 @@ public class ContactDataGenerator {
 
   @Parameter(names = "-d", description = "Data fopmat")
   public String format;
+
 
   public static void main(String[] args) throws IOException {
     ContactDataGenerator generator = new ContactDataGenerator();
@@ -73,7 +87,8 @@ public class ContactDataGenerator {
     try(Writer writer = new FileWriter(file)){
       for(ContactData contact : contacts){
         writer.write(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s\n",contact.getFirstname(),contact.getLastname(),contact.getMiddlename(),
-                contact.getNikname(),contact.getGroup(),
+                contact.getNikname(),
+                contact.getGroups().iterator().next().getName(),
                 contact.getMobilephonenumber(),contact.getWorkphonenumber(),contact.getHomephonenumber(),
                 contact.getAddress(),
                 contact.getEmail1(),contact.getEmail2(),contact.getEmail3(),contact.getPhoto()));
@@ -84,9 +99,9 @@ public class ContactDataGenerator {
 
   private List<ContactData> generateContacts(int count) {
     List<ContactData> contacts = new ArrayList<ContactData>();
-
     for(int i =0; i<count; i++){
-      contacts.add(new ContactData().withFirstname(String.format("Имя%s", i)).withLastname(String.format("Фамилия%s", i)).withMiddlename(String.format("Отчество%s", i)).withNikname(String.format("Ник%s", i)).withGroup(String.format("test%s", i))
+      contacts.add(new ContactData().withFirstname(String.format("Имя%s", i)).withLastname(String.format("Фамилия%s", i)).withMiddlename(String.format("Отчество%s", i)).withNikname(String.format("Ник%s", i))
+              .inGroup(new GroupData().withName(String.format("test%s", i)))
               .withMobilephonenumber(String.format("%s9093331111", i)).withWorkphonenumber(String.format("%s9001112222", i)).withHomephonenumber(String.format("%s982211", i))
               .withAddress("г. Тверь, ул. Ленина, д.11/22, кв." + i)
               .withEmail1(String.format("e.serov%s@bk.ru", i)).withEmail2(String.format("serov%s@mail.ru", i)).withEmail3(String.format("gok%s@dom.com", i)).withPhoto(new File("src/test/resources/foto.jpg")));

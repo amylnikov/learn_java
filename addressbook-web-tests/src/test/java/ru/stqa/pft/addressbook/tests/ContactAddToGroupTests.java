@@ -31,8 +31,8 @@ public class ContactAddToGroupTests extends TestBase{
   public void testContactAddToGroup(){
     Contacts before = app.db().contacts();
     ContactData selectedContact = before.iterator().next();
-    Groups mog = app.contact().memberOfGroups(selectedContact);
+
     app.goTo().homePage();
-    app.contact().addToNewGroup(mog);
+    app.contact().addToNewGroup();
   }
 }

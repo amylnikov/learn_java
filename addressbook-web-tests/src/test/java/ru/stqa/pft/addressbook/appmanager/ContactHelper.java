@@ -187,30 +187,32 @@ public class ContactHelper extends HelperBase {
 
 
   public Groups memberOfGroups (ContactData contact){
-    openDetailsById(contact.getId());
-    List<WebElement> elements = wd.findElements(By.xpath("//*[@id=\"content\"]/i/a"));
-    Groups groups = new Groups();
-    for (WebElement element : elements) {
-      Integer id = element.getAttribute("href").replaceAll("[^0-9]","").;
+      openDetailsById(contact.getId());
+      List<WebElement> elements = wd.findElements(By.xpath("//*[@id=\"content\"]/i/a"));
+      Groups groups = new Groups();
+      for (WebElement element : elements) {
       String name = element.getText();
-      groups.add(new GroupData().withId(id).withName(name));
-    }
+      groups.add(new GroupData().withName(name));
+   }
     return new Groups(groups);
   }
 
-  public void addToNewGroup (Groups fndgroups){
-
-    List<WebElement> elements = wd.findElements(By.xpath("//div[@class='right']//select/option"));
+  public void addToNewGroup (){
+    List<WebElement> elements = wd.findElements(By.xpath("//form[@id='right']//select/option"));
     for (WebElement element : elements) {
-      String name = element.getText();
+        String name = element.getText();
+      if(name.equals("[none]")){
+        new Select(wd.findElement(By.name("group"))).selectByVisibleText(name);
+        System.out.println(name);
+        List<WebElement> contactsInGroup = wd.findElements(By.xpath("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]"));
+        if(contactsInGroup.size() != 0){
 
 
-      if (name == fndgroups.iterator().next().getName()){
-        System.out.println("попал");
-      }else{
-        System.out.println("мимо");
-      }
+        }
+
     }
+    }
+
   }
 
 }

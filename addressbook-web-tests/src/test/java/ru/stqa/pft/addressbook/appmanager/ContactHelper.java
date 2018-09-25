@@ -10,6 +10,7 @@ import ru.stqa.pft.addressbook.model.Contacts;
 import ru.stqa.pft.addressbook.model.GroupData;
 import ru.stqa.pft.addressbook.model.Groups;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactHelper extends HelperBase {
@@ -187,64 +188,79 @@ public class ContactHelper extends HelperBase {
             .withEmail1(email1).withEmail2(email2).withEmail3(email3);
   }
 
-
-  public Groups memberOfGroups(ContactData contact) {
-    openDetailsById(contact.getId());
-    List<WebElement> elements = wd.findElements(By.xpath("//*[@id=\"content\"]/i/a"));
-    Groups groups = new Groups();
-    for (WebElement element : elements) {
-      String name = element.getText();
-      groups.add(new GroupData().withName(name));
-    }
-    return new Groups(groups);
-  }
-
   public void addToNewGroup(Contacts contacts) {
+    boolean outFlag = false;
     List<WebElement> elements = wd.findElements(By.xpath("//form[@id='right']//select/option"));
-    //new String[] names = null;
-    //Groups groups = new Groups();
+    ArrayList<String> names = new ArrayList<String>();
     for (WebElement element : elements) {
-    String name = element.getText();
-    System.out.println(name);
+      names.add(element.getText());
+      System.out.println(element);
     }
 
-
-
-   // try {
-
-      for (WebElement element : elements) {
-        System.out.println(element);
-        String name = element.getText();
-        System.out.println(name);
-        if (name.equals("[none]")) {
-          new Select(wd.findElement(By.name("group"))).selectByVisibleText(name);
-          //System.out.println(name);
-          List<WebElement> contactsInGroup = wd.findElements(By.xpath("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]"));
-          if (contactsInGroup.size() != 0) {
-            click(By.name("selected[]"));
-            //int id = Integer.parseInt(element.findElement(By.name("selected[]")).getAttribute("id"));
-            click(By.name("add"));
-          }
-
-        } else if (!name.equals("[none]") && !name.equals("[all]")) {
-          new Select(wd.findElement(By.name("group"))).selectByVisibleText(name);
-          List<WebElement> contactsInGroup = wd.findElements(By.xpath("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]"));
-          if (contactsInGroup.size() != 0) {
-            click(By.name("selected[]"));
-            int id = Integer.parseInt(element.findElement(By.name("selected[]")).getAttribute("id"));
-            for (ContactData contact : contacts) {
-              if (contact.getId() == id) {
-                Long t = contact.getGroups().stream().count();
-                System.out.println(t);
-              }
-            }
-          }
+    // try {
+    for (String name : names) {
+      if(outFlag){break;}
+      System.out.println(name);
+      if (name.equals("[none]")) {
+        new Select(wd.findElement(By.name("group"))).selectByVisibleText(name);
+        //System.out.println(name);
+        List<WebElement> contactsInGroup = wd.findElements(By.xpath("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]"));
+        if (contactsInGroup.size() != 0) {
+          click(By.name("selected[]"));
+          //int id = Integer.parseInt(element.findElement(By.name("selected[]")).getAttribute("id"));
+          click(By.name("add"));
+          outFlag = true;
         }
 
+      } else if (!name.equals("[none]") && !name.equals("[all]")) {      //Условие при выполнении которого определяем, что выбран список для какой-то конкретной группы
+        new Select(wd.findElement(By.name("group"))).selectByVisibleText(name); //Собственно выбираем эту группу, чтобы отобразился список контактов принадлежащий этой группе
+        List<WebElement> contactsInGroup = wd.findElements(By.xpath("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]")); //Собираем список всех контактов в виде ссылок на веб-элементы элементы
+        if (contactsInGroup.size() != 0) { //проверяем не пустой ли получился список
+          for (WebElement contactInGroup : contactsInGroup) { //Зпускаем первый уровень хреноциклов по отобранным контактам в данной группе, нужен чтобы можно было по очереди выбирать контакты в этой группе
+            click(By.name("selected[]")); //Выделяем контакт на котором сейчас находимся в цикле
+            int id = Integer.parseInt(wd.findElement(By.name("selected[]")).getAttribute("id")); //Берем идентификатор выбранного контакта для дальнейшей проверки
+            for (ContactData contact : contacts) { //Запускаем второй уровень хреноциклов по всем имеющимся контактам в базе
+              if (contact.getId() == id) { //Условие при выполнении которого находим выделенный контакт
+                Groups groups = new Groups(contact.getGroups()); //Получаем информацию о всех группах в которые включен данный контакт
+                System.out.println(groups);
+                List<WebElement> groupsToAdd = wd.findElements(By.xpath("//div[@class='right']//select/option"));
+                for (WebElement groupToAdd : groupsToAdd) {
+                  if(outFlag){break;}
+                  boolean inGroup = false;
+                  String groupToAddName = groupToAdd.getText();
+                  System.out.println("===========================================================================");
+                  System.out.println("Выбрана группа " + groupToAddName + " из списка групп в которые можно включить контакт\n");
+                  System.out.println("Проверяем включен ли контакт уже в эту группу или нет:\n");
+                  for (GroupData group : groups) {
+                    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                    String groupName = group.getName();
+                    if (groupToAddName.equals(groupName)) {
+                      System.out.println("Группа " + groupToAddName + " совпала с группой контакта " + groupName + " переходим к проверке следующей группы в которую включен контакт\n");
+                      inGroup = true;
+                    } else {
+                      System.out.println("Группа " + groupToAddName + " не совпала с группой контакта " + groupName);
+                    }
+                  }
+                  if (!inGroup) {
+                    System.out.println("Группа " + groupToAddName + " не совпала ни с одной группой в контакте, значит можно включить в эту группу данный контакт\n");
+                    new Select(wd.findElement(By.name("to_group"))).selectByVisibleText(groupToAddName);
+                    click(By.name("add"));
+                    outFlag = true;
+                  }else{
+                    System.out.println("Группа " + groupToAddName + " уже используется контактом");
+                  }
+                }
+              }
+            }
+            click(By.name("selected[]"));
+          }
+        }
       }
- //   } catch (Exception e) {
-  //    System.out.println(e.getMessage());
-  //  }
+
+    }
+    //   } catch (Exception e) {
+    //    System.out.println(e.getMessage());
+    //  }
   }
 
 }

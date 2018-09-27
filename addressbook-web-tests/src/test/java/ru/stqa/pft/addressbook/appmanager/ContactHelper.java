@@ -197,7 +197,6 @@ public class ContactHelper extends HelperBase {
       System.out.println(element);
     }
 
-    // try {
     for (String name : names) {
       if(outFlag){break;}
       System.out.println(name);
@@ -217,22 +216,28 @@ public class ContactHelper extends HelperBase {
         List<WebElement> contactsInGroup = wd.findElements(By.xpath("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]")); //Собираем список всех контактов в виде ссылок на веб-элементы элементы
         if (contactsInGroup.size() != 0) { //проверяем не пустой ли получился список
           for (WebElement contactInGroup : contactsInGroup) { //Зпускаем первый уровень хреноциклов по отобранным контактам в данной группе, нужен чтобы можно было по очереди выбирать контакты в этой группе
-            click(By.name("selected[]")); //Выделяем контакт на котором сейчас находимся в цикле
-            int id = Integer.parseInt(wd.findElement(By.name("selected[]")).getAttribute("id")); //Берем идентификатор выбранного контакта для дальнейшей проверки
+            System.out.println("::::::::::::::::::::::::::: запуск цикла (WebElement contactInGroup : contactsInGroup) :::::::::::::::::::::::::::::::::::");
+
+            int id = Integer.parseInt(contactInGroup.findElement(By.name("selected[]")).getAttribute("id")); //Берем идентификатор выбранного контакта для дальнейшей проверки
+            click(By.id(String.format("%s", id))); //Выделяем контакт на котором сейчас находимся в цикле
+            System.out.println("СЕЙЧАС ВЫБРАН КОНТАКТ С ИД = " + id);
             for (ContactData contact : contacts) { //Запускаем второй уровень хреноциклов по всем имеющимся контактам в базе
+              System.out.println("********************* запуск цикла for (ContactData contact : contacts) **********************************");
+              if(outFlag){break;}
               if (contact.getId() == id) { //Условие при выполнении которого находим выделенный контакт
                 Groups groups = new Groups(contact.getGroups()); //Получаем информацию о всех группах в которые включен данный контакт
                 System.out.println(groups);
                 List<WebElement> groupsToAdd = wd.findElements(By.xpath("//div[@class='right']//select/option"));
                 for (WebElement groupToAdd : groupsToAdd) {
-                  if(outFlag){break;}
+                  System.out.println("-------------------- запуск цикла for (WebElement groupToAdd : groupsToAdd) -----------");
+
                   boolean inGroup = false;
                   String groupToAddName = groupToAdd.getText();
                   System.out.println("===========================================================================");
                   System.out.println("Выбрана группа " + groupToAddName + " из списка групп в которые можно включить контакт\n");
                   System.out.println("Проверяем включен ли контакт уже в эту группу или нет:\n");
                   for (GroupData group : groups) {
-                    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                    System.out.println("++++++++++++++++++++ запуск цикла for (GroupData group : groups) +++++++++++++++++++++++++");
                     String groupName = group.getName();
                     if (groupToAddName.equals(groupName)) {
                       System.out.println("Группа " + groupToAddName + " совпала с группой контакта " + groupName + " переходим к проверке следующей группы в которую включен контакт\n");
@@ -246,21 +251,25 @@ public class ContactHelper extends HelperBase {
                     new Select(wd.findElement(By.name("to_group"))).selectByVisibleText(groupToAddName);
                     click(By.name("add"));
                     outFlag = true;
+                    break;
                   }else{
                     System.out.println("Группа " + groupToAddName + " уже используется контактом");
                   }
                 }
               }
             }
-            click(By.name("selected[]"));
+            if(outFlag){break;}
+            if(contactInGroup.findElement(By.id(String.format("%s", id))).isSelected()){
+            click(By.id(String.format("%s", id)));
+            }
           }
         }
       }
 
     }
-    //   } catch (Exception e) {
-    //    System.out.println(e.getMessage());
-    //  }
+    if(!outFlag){
+      System.out.println("Все контакты включены во все группы!!!!!! Нужно срочно создать новую группу и включить в неё какой-нибудь контакт");
+    }
   }
 
 }

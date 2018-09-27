@@ -30,9 +30,15 @@ public class ContactAddToGroupTests extends TestBase{
   @Test
   public void testContactAddToGroup(){
     Contacts before = app.db().contacts();
-   // ContactData selectedContact = before.iterator().next();
-
     app.goTo().homePage();
-    app.contact().addToNewGroup(before);
+    boolean contactAddToNewGroup = app.contact().addToNewGroup(before);
+    if(!contactAddToNewGroup){
+      int num = (int)(Math.random()*100);
+      app.goTo().groupPage();
+      app.group().create(new GroupData().withName(String.format("test%s",num)));
+      app.goTo().homePage();
+      app.contact().addToNewGroup(before);
+    }
+
   }
 }

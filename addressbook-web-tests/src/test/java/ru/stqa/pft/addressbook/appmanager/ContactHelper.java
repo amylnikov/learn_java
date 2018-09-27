@@ -188,7 +188,7 @@ public class ContactHelper extends HelperBase {
             .withEmail1(email1).withEmail2(email2).withEmail3(email3);
   }
 
-  public void addToNewGroup(Contacts contacts) {
+  public boolean addToNewGroup(Contacts contacts) {//Сегодня показал этот код нашему программисту.... никогда бы не подумал, что взрослый мужик будет так плакать... видать программисты очень ранимые люди(((
     boolean outFlag = false;
     List<WebElement> elements = wd.findElements(By.xpath("//form[@id='right']//select/option"));
     ArrayList<String> names = new ArrayList<String>();
@@ -269,7 +269,9 @@ public class ContactHelper extends HelperBase {
     }
     if(!outFlag){
       System.out.println("Все контакты включены во все группы!!!!!! Нужно срочно создать новую группу и включить в неё какой-нибудь контакт");
+      return false;
     }
+    return true;
   }
 
 }

@@ -42,4 +42,24 @@ public Contacts contacts(){
   return  new Contacts(result);
 }
 
+
+  public ContactData groupsInSelectedContact(int contactToAddId) {
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    List<ContactData> selection = session.createQuery( "from ContactData WHERE id =" + contactToAddId).list();
+    ContactData result = selection.iterator().next();
+    session.getTransaction().commit();
+    session.close();
+    return  result;
+  }
+
+  public GroupData groupById(int addedGroupId) {
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    List<GroupData> selection = session.createQuery( "from GroupData WHERE group_id =" + addedGroupId).list();
+    GroupData result = selection.iterator().next();
+    session.getTransaction().commit();
+    session.close();
+    return  result;
+  }
 }

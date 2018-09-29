@@ -181,8 +181,7 @@ public class ContactHelper extends HelperBase {
             .withEmail1(email1).withEmail2(email2).withEmail3(email3);
   }
 
-  public boolean addToNewGroup(Contacts contacts) {
-    boolean outFlag = false;
+  public int contactWhichCanAddToGroup(Contacts contacts) {
     List<WebElement> elements = collectVisibleWebElements("//form[@id='right']//select/option");
     ArrayList<String> groupsId = new ArrayList<String>();
     for (WebElement element : elements) {
@@ -191,30 +190,27 @@ public class ContactHelper extends HelperBase {
     }
 
     for (String groupId : groupsId) {
-      if(outFlag){break;}
-      System.out.println(groupId);
       if (groupId.equals("[none]")) {
-        new Select(wd.findElement(By.name("group"))).selectByValue(groupId);
-        System.out.println(groupId);
+        selectGroupById("group", String.format("%s",groupId));
         List<WebElement> contactsInGroup = collectVisibleWebElements("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]");
         if (contactsInGroup.size() != 0) {
-          click(By.name("selected[]"));
-          click(By.name("add"));
-          outFlag = true;
+          int contactId = Integer.parseInt(wd.findElement(By.name("selected[]")).getAttribute("id"));
+          return contactId;
         }
+      } else if (!groupId.equals("[none]") && !groupId.equals("")) {
 
-      } else if (!groupId.equals("[none]") && !groupId.equals("")) {             //Условие при выполнении которого определяем, что выбран список для какой-то конкретной группы
-        new Select(wd.findElement(By.name("group"))).selectByValue(groupId); //Собственно выбираем эту группу, чтобы отобразился список контактов принадлежащий этой группе
+        selectGroupById("group", String.format("%s",groupId)); //Собственно выбираем эту группу, чтобы отобразился список контактов принадлежащий этой группе
         List<WebElement> contactsInGroup = collectVisibleWebElements("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]"); //Собираем список всех контактов в виде ссылок на веб-элементы элементы
         if (contactsInGroup.size() != 0) { //проверяем не пустой ли получился список
+
           for (WebElement contactInGroup : contactsInGroup) { //Зпускаем первый уровень циклов по отобранным контактам в данной группе, нужен чтобы можно было по очереди выбирать контакты в этой группе
-            int id = Integer.parseInt(contactInGroup.findElement(By.name("selected[]")).getAttribute("id")); //Берем идентификатор выбранного контакта для дальнейшей проверки
-            click(By.id(String.format("%s", id))); //Выделяем контакт на котором сейчас находимся в цикле
+            int inGroupContactId = Integer.parseInt(contactInGroup.findElement(By.name("selected[]")).getAttribute("id")); //Берем идентификатор выбранного контакта для дальнейшей проверки
+            click(By.id(String.format("%s", inGroupContactId))); //Выделяем контакт на котором сейчас находимся в цикле
+
             for (ContactData contact : contacts) { //Запускаем второй уровень циклов по всем имеющимся контактам в базе
-              if(outFlag){break;}  //Флаг выхода из цикла при достижении нужного условия
-              if (contact.getId() == id) { //Условие при выполнении которого находим выделенный контакт
+
+              if (contact.getId() == inGroupContactId) { //Условие при выполнении которого находим выделенный контакт
                 Groups groups = new Groups(contact.getGroups()); //Получаем информацию о всех группах в которые включен данный контакт
-                System.out.println(groups);
                 List<WebElement> groupsToAdd = collectVisibleWebElements("//div[@class='right']//select/option");
                 for (WebElement groupToAdd : groupsToAdd) {
                   boolean inGroup = false;
@@ -226,23 +222,57 @@ public class ContactHelper extends HelperBase {
                     }
                   }
                   if (!inGroup) {
-                    new Select(wd.findElement(By.name("to_group"))).selectByValue(String.format("%s", groupToAddId));
-                    click(By.name("add"));
-                    outFlag = true;
-                    break;
+                    return inGroupContactId;
                   }
                 }
               }
-            }
-            if(outFlag){break;}
-            if(contactInGroup.findElement(By.id(String.format("%s", id))).isSelected()){
-            click(By.id(String.format("%s", id)));
             }
           }
         }
       }
     }
-
-    return outFlag;
+    return 0;
   }
+
+
+  public int groupToWhichCanAdd(int contactId) {
+    List<WebElement> elements = collectVisibleWebElements("//div[@class='right']//select/option");
+    ArrayList<String> groupsId = new ArrayList<String>();
+    for (WebElement element : elements) {
+      groupsId.add(element.getAttribute("value"));
+      System.out.println(groupsId);
+    }
+    for (String groupId : groupsId) {
+        boolean inGroupFlag = false;
+        selectGroupById("group", String.format("%s",groupId));
+        List<WebElement> contactsInGroup = collectVisibleWebElements("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]");
+        if (contactsInGroup.size() == 0) {
+          return Integer.parseInt(groupId);
+        } else {
+          for (WebElement contactInGroup : contactsInGroup) {
+            int contactInGroupId = Integer.parseInt(contactInGroup.findElement(By.name("selected[]")).getAttribute("id"));
+            if (contactInGroupId == contactId) {
+              inGroupFlag = true;
+              break;
+            }else {inGroupFlag = false;}
+          }
+          if (!inGroupFlag){
+          return Integer.parseInt(groupId);}
+        }
+      }
+    return 0;
+  }
+
+  public void addToGroup(int contactId, int groupId) {
+    selectGroupById("group","");
+    selectContactById(contactId);
+    selectGroupById("to_group", String.format("%s", groupId));
+    click(By.name("add"));
+  }
+
+  private void selectGroupById(String group, String format) {
+    new Select(wd.findElement(By.name(group))).selectByValue(format);
+  }
+
+
 }

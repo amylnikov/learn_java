@@ -13,8 +13,7 @@ import java.io.File;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class ContactAddToGroupTests extends TestBase{
-
+public class ContactDeleteFromGroupTests extends TestBase {
   @BeforeMethod
   public void ensurePreconditions(){
     Groups groups = app.db().groups();
@@ -33,29 +32,32 @@ public class ContactAddToGroupTests extends TestBase{
   }
 
   @Test
-  public void testContactAddToGroup(){
-    int contactToAddId;
-    int addedGroupId;
+  public void testContactDeleteFromGroup (){
+    int contactToDeleteId;
+    int groupFromWhichDeleteId;
     Contacts contactsInBase = app.db().contacts();
+    Groups groupsInBase = app.db().groups();
     app.goTo().homePage();
-    contactToAddId = app.contact().contactWhichCanAddToGroup(contactsInBase);
-    if(contactToAddId == 0){
-      int num = (int)(Math.random()*100);
-      app.goTo().groupPage();
-      app.group().create(new GroupData().withName(String.format("test%s",num)));
+    contactToDeleteId = app.contact().contactWhichCanDeleteFromGroup(contactsInBase);
+    System.out.println(contactToDeleteId);
+    if(contactToDeleteId == 0){
+      app.contact().addToGroup(contactsInBase.iterator().next().getId(),groupsInBase.iterator().next().getId());
       app.goTo().homePage();
-      contactToAddId = app.contact().contactWhichCanAddToGroup(contactsInBase);
-       }
-    addedGroupId = app.contact().groupToWhichCanAdd(contactToAddId);
-    ContactData contactBefore = app.db().groupsInSelectedContact(contactToAddId);
+      app.contact().selectGroupById("group","");
+      contactsInBase = app.db().contacts();
+      contactToDeleteId = app.contact().contactWhichCanDeleteFromGroup(contactsInBase);
+    }
+    groupFromWhichDeleteId = app.contact().groupFromWhichCanDelete(contactToDeleteId);
+    ContactData contactBefore = app.db().groupsInSelectedContact(contactToDeleteId);
     Groups groupsBefore = contactBefore.getGroups();
 
-    app.contact().addToGroup(contactToAddId,addedGroupId);
+    app.contact().deleteFromGroup(contactToDeleteId,groupFromWhichDeleteId);
 
-    GroupData addedGroup = app.db().groupById(addedGroupId);
-    ContactData contactAfter = app.db().groupsInSelectedContact(contactToAddId);
+    GroupData deletedGroup = app.db().groupById(groupFromWhichDeleteId);
+    ContactData contactAfter = app.db().groupsInSelectedContact(contactToDeleteId);
     Groups groupsAfter = contactAfter.getGroups();
-    assertThat(groupsAfter.size(), equalTo(groupsBefore.size() + 1));
-    assertThat(groupsAfter, CoreMatchers.equalTo(groupsBefore.withAdded(addedGroup)));
+    assertThat(groupsAfter.size(), equalTo(groupsBefore.size() - 1));
+    assertThat(groupsAfter, CoreMatchers.equalTo(groupsBefore.without(deletedGroup)));
   }
+
 }

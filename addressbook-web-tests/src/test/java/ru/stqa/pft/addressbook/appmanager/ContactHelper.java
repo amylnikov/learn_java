@@ -135,6 +135,11 @@ public class ContactHelper extends HelperBase {
     return collectVisibleWebElements("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]").size();
   }
 
+  public void selectGroupById(String group, String format) {
+    new Select(wd.findElement(By.name(group))).selectByValue(format);
+  }
+
+
   Contacts contactCache = null;
 
   public Contacts all() {
@@ -182,13 +187,7 @@ public class ContactHelper extends HelperBase {
   }
 
   public int contactWhichCanAddToGroup(Contacts contacts) {
-    List<WebElement> elements = collectVisibleWebElements("//form[@id='right']//select/option");
-    ArrayList<String> groupsId = new ArrayList<String>();
-    for (WebElement element : elements) {
-      groupsId.add(element.getAttribute("value"));
-      System.out.println(element);
-    }
-
+    ArrayList<String> groupsId = elements("//form[@id='right']//select/option","value");
     for (String groupId : groupsId) {
       if (groupId.equals("[none]")) {
         selectGroupById("group", String.format("%s",groupId));
@@ -198,17 +197,13 @@ public class ContactHelper extends HelperBase {
           return contactId;
         }
       } else if (!groupId.equals("[none]") && !groupId.equals("")) {
-
         selectGroupById("group", String.format("%s",groupId)); //Собственно выбираем эту группу, чтобы отобразился список контактов принадлежащий этой группе
         List<WebElement> contactsInGroup = collectVisibleWebElements("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]"); //Собираем список всех контактов в виде ссылок на веб-элементы элементы
         if (contactsInGroup.size() != 0) { //проверяем не пустой ли получился список
-
           for (WebElement contactInGroup : contactsInGroup) { //Зпускаем первый уровень циклов по отобранным контактам в данной группе, нужен чтобы можно было по очереди выбирать контакты в этой группе
             int inGroupContactId = Integer.parseInt(contactInGroup.findElement(By.name("selected[]")).getAttribute("id")); //Берем идентификатор выбранного контакта для дальнейшей проверки
             click(By.id(String.format("%s", inGroupContactId))); //Выделяем контакт на котором сейчас находимся в цикле
-
             for (ContactData contact : contacts) { //Запускаем второй уровень циклов по всем имеющимся контактам в базе
-
               if (contact.getId() == inGroupContactId) { //Условие при выполнении которого находим выделенный контакт
                 Groups groups = new Groups(contact.getGroups()); //Получаем информацию о всех группах в которые включен данный контакт
                 List<WebElement> groupsToAdd = collectVisibleWebElements("//div[@class='right']//select/option");
@@ -236,21 +231,16 @@ public class ContactHelper extends HelperBase {
 
 
   public int groupToWhichCanAdd(int contactId) {
-    List<WebElement> elements = collectVisibleWebElements("//div[@class='right']//select/option");
-    ArrayList<String> groupsId = new ArrayList<String>();
-    for (WebElement element : elements) {
-      groupsId.add(element.getAttribute("value"));
-      System.out.println(groupsId);
-    }
+    ArrayList<String> groupsId = elements("//div[@class='right']//select/option","value");
     for (String groupId : groupsId) {
         boolean inGroupFlag = false;
         selectGroupById("group", String.format("%s",groupId));
-        List<WebElement> contactsInGroup = collectVisibleWebElements("//*[@id=\"maintable\"]/tbody/tr[@name=\"entry\"]");
+        List<WebElement> contactsInGroup = collectVisibleWebElements("//*[@name=\"selected[]\"]");
         if (contactsInGroup.size() == 0) {
           return Integer.parseInt(groupId);
         } else {
           for (WebElement contactInGroup : contactsInGroup) {
-            int contactInGroupId = Integer.parseInt(contactInGroup.findElement(By.name("selected[]")).getAttribute("id"));
+            int contactInGroupId = Integer.parseInt(contactInGroup.getAttribute("id"));
             if (contactInGroupId == contactId) {
               inGroupFlag = true;
               break;
@@ -270,8 +260,55 @@ public class ContactHelper extends HelperBase {
     click(By.name("add"));
   }
 
-  private void selectGroupById(String group, String format) {
-    new Select(wd.findElement(By.name(group))).selectByValue(format);
+
+
+  public int contactWhichCanDeleteFromGroup(Contacts contacts){
+    ArrayList<String> contactsId = elements("//*[@name=\"selected[]\"]","value");
+    for(String contactId : contactsId){
+      int id = Integer.parseInt(contactId);
+      for(ContactData contact : contacts){
+        if(contact.getId() == id){
+          Groups groupsOfThisContact = new Groups(contact.getGroups());
+          if(groupsOfThisContact.size() != 0){
+            return id;
+          }
+        }
+      }
+    }
+    return 0;
+  }
+
+  public int groupFromWhichCanDelete(int contactToDeleteId) {
+    ArrayList<String> groupsId =  elements("//div[@class='right']//select/option","value");
+    for (String groupId : groupsId) {
+      selectGroupById("group", String.format("%s",groupId));
+      List<WebElement> contactsInGroup = collectVisibleWebElements("//*[@name=\"selected[]\"]");
+      if (contactsInGroup.size() != 0){
+        for (WebElement contactInGroup : contactsInGroup) {
+          int contactInGroupId = Integer.parseInt(contactInGroup.getAttribute("id"));
+          if(contactInGroupId == contactToDeleteId){
+            return Integer.parseInt(groupId);
+          }
+        }
+      }
+    }
+    return 0;
+  }
+
+  public void deleteFromGroup(int contactId, int groupId) {
+    selectGroupById("group",String.format("%s", groupId));
+    selectContactById(contactId);
+    click(By.name("remove"));
+  }
+
+
+  private ArrayList<String> elements(String webElement, String attribute) {
+    List<WebElement> elements = collectVisibleWebElements(webElement);
+    ArrayList<String> id = new ArrayList<String>();
+    for (WebElement element : elements) {
+      id.add(element.getAttribute(attribute));
+    }
+    return id;
   }
 
 

@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 import ru.lanwen.verbalregex.VerbalExpression;
 import ru.stqa.pft.mantis.appmanager.HttpSession;
 import ru.stqa.pft.mantis.model.MailMessage;
+import ru.stqa.pft.mantis.model.User;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,17 +24,15 @@ public class ChangeUserPassTests extends TestBase {
     long now = System.currentTimeMillis();
     HttpSession session = app.newSession();
     String newPassword = String.format("newpassword%s",now);
-    String userIdToChange = app.db().userId();
-    String userMail = app.db().userMail(userIdToChange);
-    String userName = app.db().userName(userIdToChange);
+    User user = app.db().user();
     app.changePass().login(app.getProperty("web.adminLogin"), app.getProperty("web.adminPassword"));
-    app.changePass().start(userIdToChange);
+    app.changePass().start(String.format("%s", user.getId()));
     List<MailMessage> mailMessages = app.mail().waitForMail(1, 10000);
-    String confirmationLink = findConfirmationLink(mailMessages, userMail);
+    String confirmationLink = findConfirmationLink(mailMessages, user.getEmail());
     app.changePass().finish(confirmationLink, newPassword);
-    session.login(userName, newPassword);
-    assertTrue(session.login(userName,newPassword));
-    assertTrue(session.isLoggedInAs(userName));
+    session.login(user.getName(), newPassword);
+    assertTrue(session.login(user.getName(),newPassword));
+    assertTrue(session.isLoggedInAs(user.getName()));
   }
 
   private String findConfirmationLink(List<MailMessage> mailMessages, String email) {

@@ -67,7 +67,6 @@ public class ApplicationManager {
     return ftp;
   }
 
-
   public WebDriver getDriver() {
     if(wd == null){
 
@@ -106,7 +105,6 @@ public class ApplicationManager {
   }
 
   public DbHelper db(){
-
     return dbHelper;
   }
 
@@ -114,7 +112,6 @@ public class ApplicationManager {
     if(soapHelper == null){
       soapHelper = new SoapHelper(this);
     }
-
     return soapHelper;
   }
 

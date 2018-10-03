@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicNameValuePair;
+import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -18,8 +19,19 @@ public class RestTests {
 
   @Test
   public void testCreateIssue() throws IOException {
+    skipIfNotFixed(351);
     Set<Issue> oldIssues = getIssues();
     Issue newIssue = new Issue().withSubject("My own test issue").withDescription("Another useless test issue");
+    int issueId = createIssue(newIssue);
+    Set<Issue> newIssues = getIssues();
+    oldIssues.add(newIssue.withId(issueId));
+    assertEquals(newIssues, oldIssues);
+  }
+
+  @Test
+  public void testCreateIssue1() throws IOException {
+    Set<Issue> oldIssues = getIssues();
+    Issue newIssue = new Issue().withSubject("My own test issue1").withDescription("Another useless test issue1");
     int issueId = createIssue(newIssue);
     Set<Issue> newIssues = getIssues();
     oldIssues.add(newIssue.withId(issueId));
@@ -46,4 +58,29 @@ public class RestTests {
     JsonElement parsed = new JsonParser().parse(json);
     return parsed.getAsJsonObject().get("issue_id").getAsInt();
   }
+
+  private String getIssueStatus(int issueId) throws IOException {
+    String json = getExecutor().execute(Request.Get(String.format("http://bugify.stqa.ru/api/issues/%s.json", issueId)))
+            .returnContent().asString();
+    JsonElement parsed = new JsonParser().parse(json);
+    return parsed
+            .getAsJsonObject().get("issues")
+            .getAsJsonArray().get(0)
+            .getAsJsonObject()
+            .get("state_name").getAsString();
+  }
+
+  public boolean isIssueOpen(int issueId) throws IOException {
+    if (getIssueStatus(issueId).equals("Closed")) {
+      return false;
+    }
+    return true;
+  }
+
+  public void skipIfNotFixed(int issueId) throws IOException {
+    if (isIssueOpen(issueId)) {
+      throw new SkipException("Ignored because of issue " + issueId);
+    }
+  }
+
 }
